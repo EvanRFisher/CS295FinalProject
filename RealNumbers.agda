@@ -1,4 +1,4 @@
-open import Data.Rational renaming (_-_ to _-ℚ_)
+open import Data.Rational renaming (_+_ to _+ℚ_) renaming (_-_ to _-ℚ_) renaming (_*_ to _*ℚ_) renaming (_>_ to _>ℚ_) renaming (_<_ to _<ℚ_)
 open import Data.Nat renaming (_>_ to _>ᴺ_ ) renaming (_≤_ to _≤ᴺ_ ) renaming (suc to Sᴺ) renaming (_*_ to _*ᴺ_) renaming (_+_ to _+ᴺ_)
 open import Data.Integer renaming (_*_ to _*ᶻ_)  renaming (suc to Sᶻ)
 open import Relation.Nullary
@@ -40,7 +40,7 @@ data ℝ : Set where
     ⟨_,_,_⟩ : (f   : ( ℕ → ℚ )) →
               (ε→n : (ℚ → ℕ )) →
               (∀(ε : ℚ) → ∀(a b : ℕ)
-                → ε >
+                → ε >ℚ 0ℚ
                 → a >ᴺ (ε→n ε)
                 → b >ᴺ (ε→n ε)
                 → diff (f a) (f b) Data.Rational.≤ ε ) → ℝ
@@ -54,3 +54,16 @@ const-inv = λ x n → refl
 -- 0ᵣ : ℝ
 -- 0ᵣ = ⟨ const (+ 0 / 1), (λ x → 0) , (λ ε a b a>e→n b>e→n → let d = diff (const (normalize 0 1) a) (const (normalize 0 1) b)
 --                                                                in {!   !}) ⟩
+
+
+--Helper proofs
+
+sum[<] : ∀(a b c d : ℚ) → a <ℚ c → b <ℚ d → a +ℚ b <ℚ (c +ℚ d)
+sum[<] l r c d l<c r<d = {!   !}
+-- Addition and multiplication
+
+_+ʳ_ : ℝ → ℝ → ℝ
+⟨ fᵃ , ε→nᵃ , prfᵃ ⟩ +ʳ ⟨ fᵇ , ε→nᵇ , prfᵇ ⟩ =
+                                                ⟨ (λ x → fᵃ x +ℚ fᵇ x) -- Pointwise addition
+                                                , (λ ε → ε→nᵃ (½ *ℚ ε) +ᴺ ε→nᵇ (½ *ℚ ε)) -- Take the sum of the N's for εs half the size
+                                                , (λ ε a b ε>0 a>ε→n b>ε→n → {!   !}) ⟩
