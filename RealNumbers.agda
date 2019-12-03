@@ -1,15 +1,15 @@
 open import Data.Rational.Unnormalised as ℚᵘmod renaming (_+_ to _+ℚᵘ_) renaming (_-_ to _-ℚᵘ_) renaming (_*_ to _*ℚᵘ_) renaming (_>_ to _>ℚᵘ_) renaming (_<_ to _<ℚᵘ_) renaming (_≤_ to _≤ℚᵘ_)
 open import Data.Nat renaming (_>_ to _>ᴺ_ ) renaming (_≤_ to _≤ᴺ_ ) renaming (suc to Sᴺ) renaming (_*_ to _*ᴺ_) renaming (_+_ to _+ᴺ_)
-open import Data.Integer renaming (_*_ to _*ᶻ_)  renaming (suc to Sᶻ)
+open import Data.Integer renaming (_*_ to _*ᶻ_)  renaming (suc to Sᶻ) renaming (-_ to -ᶻ_)
 open import Data.Rational.Properties as ℚprop
 open import Data.Integer.Properties as ℤprop
 open import Relation.Nullary
 open import Agda.Builtin.Equality
-open import Relation.Binary.PropositionalEquality
+--open import Relation.Binary.PropositionalEquality
+open import Axiom.Extensionality.Propositional as Extensionality
 
 -- Not used. Sometimes, Signs show up in targets, and renaming Data.Sign.Base.* to *Sign makes them more readable.
 open import Data.Sign.Base renaming (_*_ to _*Sign_)
---open import Axiom.Extensionality.Propositional as Extensionality
 
 
 
@@ -89,8 +89,8 @@ postulate
     commu[×] : ∀ (m n : ℚᵘ) → m *ℚᵘ n ≡ n *ℚᵘ m
     ldist[×] : ∀ (m n p : ℚᵘ) → m *ℚᵘ (n +ℚᵘ p) ≡ m *ℚᵘ n +ℚᵘ m *ℚᵘ p
     rdist[×] : ∀ (m n p : ℚᵘ) → (m +ℚᵘ n) *ℚᵘ p ≡ m *ℚᵘ p +ℚᵘ n *ℚᵘ p
-    distr[-] : ∀ (m n : ℚᵘ) → ℚᵘmod.-(m +ℚᵘ n) ≡ ((ℚᵘmod.- m) +ℚᵘ (ℚᵘmod.- n))
-    inver[+] : ∀ (m : ℚᵘ) → (m +ℚᵘ ℚᵘmod.- m) ≡ 0ℚᵘ
+    distr[-] : ∀ (m n p : ℚᵘ) → m -ℚᵘ (n +ℚᵘ p) ≡ m -ℚᵘ n -ℚᵘ p
+    inver[+] : ∀ (m : ℚᵘ) → (m -ℚᵘ m) ≡ 0ℚᵘ
 
 
 0ᵣ : ℝ
@@ -101,9 +101,21 @@ postulate
 
 -- Addition and multiplication
 
+-- look at that type. Whew.
+add-helper : (f₁ : ( ℕ → ℚᵘ )) → (ε→n₁ : (ℚᵘ → ℕ )) → (∀(ε₁ : ℚᵘ) → ∀(a₁ b₁ : ℕ) → ε₁ >ℚᵘ 0ℚᵘ → a₁ >ᴺ (ε→n₁ ε₁) → b₁ >ᴺ (ε→n₁ ε₁) → abs (f₁ a₁ -ℚᵘ f₁ b₁) ≤ℚᵘ ε₁ ) →
+             (f₂ : ( ℕ → ℚᵘ )) → (ε→n₂ : (ℚᵘ → ℕ )) → (∀(ε₂ : ℚᵘ) → ∀(a₂ b₂ : ℕ) → ε₂ >ℚᵘ 0ℚᵘ → a₂ >ᴺ (ε→n₂ ε₂) → b₂ >ᴺ (ε→n₂ ε₂) → abs (f₂ a₂ -ℚᵘ f₂ b₂) ≤ℚᵘ ε₂ ) →
+             ∀(εₓ : ℚᵘ) → ∀(aₓ bₓ : ℕ) → εₓ >ℚᵘ 0ℚᵘ → aₓ >ᴺ ((λ ε → ε→n₁ ( ½ *ℚᵘ ε) +ᴺ ε→n₂ ( ½ *ℚᵘ ε)) εₓ) → bₓ >ᴺ ((λ ε → ε→n₁ ( ½ *ℚᵘ ε) +ᴺ ε→n₂ ( ½ *ℚᵘ ε)) εₓ) →
+             abs ((λ x → f₁ x +ℚᵘ f₂ x) aₓ -ℚᵘ (λ x → f₁ x +ℚᵘ f₂ x) bₓ) ≤ℚᵘ εₓ
+
+add-helper fᵃ ε→nᵃ prfᵃ fᵇ ε→nᵇ prfᵇ εₓ aₓ bₓ εₓ>0 aₓ>ε bₓ>ε rewrite distr[-] (fᵃ aₓ +ℚᵘ fᵇ bₓ) (fᵃ aₓ) (fᵇ bₓ)
+                                                                   | commu[+] (fᵃ aₓ) (fᵇ bₓ)
+                                                                   | assoc[+] (fᵇ bₓ) (fᵃ aₓ) (ℚᵘmod.- fᵃ aₓ)
+                                                                   | inver[+] (fᵃ aₓ) = {!   !}
+
+
 _+ʳ_ : ℝ → ℝ → ℝ
-⟪ fᵃ , ε→nᵃ , prfᵃ ⟫ +ʳ ⟪ fᵇ , ε→nᵇ , prfᵇ ⟫  with (λ x → fᵃ x +ℚᵘ fᵇ x)  | (λ ε → ε→nᵃ ( ½ *ℚᵘ ε) +ᴺ ε→nᵇ ( ½ *ℚᵘ ε))
-⟪ fᵃ , ε→nᵃ , prfᵃ ⟫ +ʳ ⟪ fᵇ , ε→nᵇ , prfᵇ ⟫ | fˣ | ε→nˣ = ⟪ fˣ , ε→nˣ , {!   !} ⟫
+⟪ fᵃ , ε→nᵃ , prfᵃ ⟫ +ʳ ⟪ fᵇ , ε→nᵇ , prfᵇ ⟫  with (λ x → fᵃ x +ℚᵘ fᵇ x)  | (λ ε → ε→nᵃ ( ½ *ℚᵘ ε) +ᴺ ε→nᵇ ( ½ *ℚᵘ ε)) | add-helper fᵃ ε→nᵃ prfᵃ fᵇ ε→nᵇ prfᵇ
+⟪ fᵃ , ε→nᵃ , prfᵃ ⟫ +ʳ ⟪ fᵇ , ε→nᵇ , prfᵇ ⟫ | fˣ | ε→nˣ | prfₓ = ⟪ fˣ , ε→nˣ , {!  !} ⟫
                                                 -- ⟪  -- Pointwise addition
                                                 -- ,  -- Take the sum of the N's for εs half the size
                                                 -- ,  ⟫
@@ -119,7 +131,7 @@ _+ʳ_ : ℝ → ℝ → ℝ
 -- Addition Lemmas
 commu-helper : ∀ (f₁ f₂ : (ℕ → ℚᵘ)) → ∀ (a : ℕ) → abs (f₁ a +ℚᵘ f₂ a -ℚᵘ (f₂ a +ℚᵘ f₁ a)) ≡ 0ℚᵘ
 commu-helper f g a with f a | g a | ℚᵘmod.- g a | ℚᵘmod.- f a
-... | fa | ga | nga | nfa rewrite distr[-] (g a) (f a) | assoc[+] (fa) (ga) (nga +ℚᵘ nfa) | assoc[+] (ga) (nga) (nfa) | inver[+] (ga) | lunit[+] nfa = {!   !}
+... | fa | ga | nga | nfa rewrite distr[-] (fa +ℚᵘ ga) (ga) (fa) | assoc[+] (fa) (ga) (nga +ℚᵘ nfa) | assoc[+] (ga) (nga) (nfa) | inver[+] (ga) | lunit[+] nfa = {!   !}
 
 commu-helper′ : ∀ (f₁ f₂ : (ℕ → ℚᵘ)) → ∀ (a : ℕ) → ∀ (ε : ℚᵘ) → abs (f₁ a +ℚᵘ f₂ a -ℚᵘ (f₂ a +ℚᵘ f₁ a)) ≤ℚᵘ ε
 commu-helper′ f g a ε rewrite commu-helper f g a | ℤprop.*-zeroˡ (↧ ε) = *≤* {! ℤprop.*-zeroˡ (↧ ε)!}
@@ -142,5 +154,5 @@ inver[+ʳ] a = {!   !}
 
 --Multiplication
 _×ʳ_ : ℝ → ℝ → ℝ
-⟪ fᵃ , ε→nᵃ , prfᵃ ⟫ ×ʳ ⟪ fᵇ , ε→nᵇ , prfᵇ ⟫  with (λ x → fᵃ x *ℚᵘ fᵇ x) | inspect (λ x → fᵃ x *ℚᵘ fᵇ x) | (λ ε → ε→nᵃ ( ½ *ℚᵘ ε) *ᴺ ε→nᵇ ( ½ *ℚᵘ ε))
-... | fˣ | fˣ₂ | ε→nˣ = ⟪ fˣ , ε→nˣ , (λ where ε a b ε>0 a>nˣ b>nˣ → {!   !}) ⟫
+⟪ fᵃ , ε→nᵃ , prfᵃ ⟫ ×ʳ ⟪ fᵇ , ε→nᵇ , prfᵇ ⟫  with (λ x → fᵃ x *ℚᵘ fᵇ x) | (λ ε → ε→nᵃ ( ½ *ℚᵘ ε) *ᴺ ε→nᵇ ( ½ *ℚᵘ ε))
+... | fˣ | ε→nˣ = ⟪ fˣ , ε→nˣ , (λ where ε a b ε>0 a>nˣ b>nˣ → {!   !}) ⟫
