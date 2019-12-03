@@ -92,11 +92,14 @@ postulate
     distr[-] : ∀ (m n p : ℚᵘ) → m -ℚᵘ (n +ℚᵘ p) ≡ m -ℚᵘ n -ℚᵘ p
     inver[+] : ∀ (m : ℚᵘ) → (m -ℚᵘ m) ≡ 0ℚᵘ
 
-0ᵣ-helper : (∀(ε : ℚᵘ) → ∀(a b : ℕ) → ε >ℚᵘ 0ℚᵘ → a >ᴺ (ε→n ε) → b >ᴺ (ε→n ε) → abs (f a -ℚᵘ f b) ≤ℚᵘ ε )
-0ᵣ-helper ε a b ε>0 a>e→n b>e→n = ?
+    mkℚᵘ0→0 : ∀ (m : ℕ) → mkℚᵘ +0 m ≡ 0ℚᵘ
+
+0ᵣ-helper : (∀(ε : ℚᵘ) → ∀(a b : ℕ) → ε >ℚᵘ 0ℚᵘ → a >ᴺ ((λ x → 0) ε) → b >ᴺ ((λ x → 0) ε) → abs ((λ x → 0ℚᵘ) a -ℚᵘ (λ x → 0ℚᵘ) b) ≤ℚᵘ ε )
+0ᵣ-helper (mkℚᵘ (+_ n) denominator-1) a b (*<* x) a>e→n b>e→n = *≤* {!  ℤprop.<⇒≤ x  !}
+0ᵣ-helper (mkℚᵘ (-[1+_] n) denominator-1) a b (*<* ()) a>e→n b>e→n
 
 0ᵣ : ℝ
-0ᵣ rewrite ℤprop.*-zeroˡ = ⟪ (λ x → 0ℚᵘ) , (λ x → 0) , (λ ε a b ε>0 a>e→n b>e→n → *≤* {!   !}) ⟫
+0ᵣ = ⟪ (λ x → 0ℚᵘ) , (λ x → 0) , 0ᵣ-helper ⟫
 
 --Helper proofs
 
