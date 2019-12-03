@@ -92,16 +92,18 @@ postulate
     distr[-] : ∀ (m n p : ℚᵘ) → m -ℚᵘ (n +ℚᵘ p) ≡ m -ℚᵘ n -ℚᵘ p
     inver[+] : ∀ (m : ℚᵘ) → (m -ℚᵘ m) ≡ 0ℚᵘ
 
+0ᵣ-helper : (∀(ε : ℚᵘ) → ∀(a b : ℕ) → ε >ℚᵘ 0ℚᵘ → a >ᴺ (ε→n ε) → b >ᴺ (ε→n ε) → abs (f a -ℚᵘ f b) ≤ℚᵘ ε )
+0ᵣ-helper ε a b ε>0 a>e→n b>e→n = ?
 
 0ᵣ : ℝ
-0ᵣ with (λ x → 0)
-... | const0 = ⟪ (λ x → 0ℚᵘ) , const0 , (λ ε a b ε>0 a>e→n b>e→n → *≤* {! ℤprop.*-zeroˡ (↧ ε)  !}) ⟫
+0ᵣ rewrite ℤprop.*-zeroˡ = ⟪ (λ x → 0ℚᵘ) , (λ x → 0) , (λ ε a b ε>0 a>e→n b>e→n → *≤* {!   !}) ⟫
 
 --Helper proofs
 
 -- Addition and multiplication
 
--- look at that type. Whew.
+-- look at that type line. Whew.
+-- This is a top-level function replicating the lambda that would be the third argument to the outpt of _+ʳ_. Because the types are dependant, we have to list them all out.
 add-helper : (f₁ : ( ℕ → ℚᵘ )) → (ε→n₁ : (ℚᵘ → ℕ )) → (∀(ε₁ : ℚᵘ) → ∀(a₁ b₁ : ℕ) → ε₁ >ℚᵘ 0ℚᵘ → a₁ >ᴺ (ε→n₁ ε₁) → b₁ >ᴺ (ε→n₁ ε₁) → abs (f₁ a₁ -ℚᵘ f₁ b₁) ≤ℚᵘ ε₁ ) →
              (f₂ : ( ℕ → ℚᵘ )) → (ε→n₂ : (ℚᵘ → ℕ )) → (∀(ε₂ : ℚᵘ) → ∀(a₂ b₂ : ℕ) → ε₂ >ℚᵘ 0ℚᵘ → a₂ >ᴺ (ε→n₂ ε₂) → b₂ >ᴺ (ε→n₂ ε₂) → abs (f₂ a₂ -ℚᵘ f₂ b₂) ≤ℚᵘ ε₂ ) →
              ∀(εₓ : ℚᵘ) → ∀(aₓ bₓ : ℕ) → εₓ >ℚᵘ 0ℚᵘ → aₓ >ᴺ ((λ ε → ε→n₁ ( ½ *ℚᵘ ε) +ᴺ ε→n₂ ( ½ *ℚᵘ ε)) εₓ) → bₓ >ᴺ ((λ ε → ε→n₁ ( ½ *ℚᵘ ε) +ᴺ ε→n₂ ( ½ *ℚᵘ ε)) εₓ) →
@@ -114,8 +116,7 @@ add-helper fᵃ ε→nᵃ prfᵃ fᵇ ε→nᵇ prfᵇ εₓ aₓ bₓ εₓ>0 a
 
 
 _+ʳ_ : ℝ → ℝ → ℝ
-⟪ fᵃ , ε→nᵃ , prfᵃ ⟫ +ʳ ⟪ fᵇ , ε→nᵇ , prfᵇ ⟫  with (λ x → fᵃ x +ℚᵘ fᵇ x)  | (λ ε → ε→nᵃ ( ½ *ℚᵘ ε) +ᴺ ε→nᵇ ( ½ *ℚᵘ ε)) | add-helper fᵃ ε→nᵃ prfᵃ fᵇ ε→nᵇ prfᵇ
-⟪ fᵃ , ε→nᵃ , prfᵃ ⟫ +ʳ ⟪ fᵇ , ε→nᵇ , prfᵇ ⟫ | fˣ | ε→nˣ | prfₓ = ⟪ fˣ , ε→nˣ , {!  !} ⟫
+⟪ fᵃ , ε→nᵃ , prfᵃ ⟫ +ʳ ⟪ fᵇ , ε→nᵇ , prfᵇ ⟫ = ⟪ (λ x → fᵃ x +ℚᵘ fᵇ x) , (λ ε → ε→nᵃ ( ½ *ℚᵘ ε) +ᴺ ε→nᵇ ( ½ *ℚᵘ ε)) , add-helper fᵃ ε→nᵃ prfᵃ fᵇ ε→nᵇ prfᵇ ⟫
                                                 -- ⟪  -- Pointwise addition
                                                 -- ,  -- Take the sum of the N's for εs half the size
                                                 -- ,  ⟫
@@ -134,7 +135,7 @@ commu-helper f g a with f a | g a | ℚᵘmod.- g a | ℚᵘmod.- f a
 ... | fa | ga | nga | nfa rewrite distr[-] (fa +ℚᵘ ga) (ga) (fa) | assoc[+] (fa) (ga) (nga +ℚᵘ nfa) | assoc[+] (ga) (nga) (nfa) | inver[+] (ga) | lunit[+] nfa = {!   !}
 
 commu-helper′ : ∀ (f₁ f₂ : (ℕ → ℚᵘ)) → ∀ (a : ℕ) → ∀ (ε : ℚᵘ) → abs (f₁ a +ℚᵘ f₂ a -ℚᵘ (f₂ a +ℚᵘ f₁ a)) ≤ℚᵘ ε
-commu-helper′ f g a ε rewrite commu-helper f g a | ℤprop.*-zeroˡ (↧ ε) = *≤* {! ℤprop.*-zeroˡ (↧ ε)!}
+commu-helper′ f g a ε rewrite commu-helper f g a | ℤprop.*-zeroˡ (↧ ε) = {!  !}
 
 
 
@@ -153,6 +154,11 @@ inver[+ʳ] : ∀ (a : ℝ) → (a +ʳ (-ᵣ a) ≃ʳ 0ᵣ)
 inver[+ʳ] a = {!   !}
 
 --Multiplication
+mul-helper : (f₁ : ( ℕ → ℚᵘ )) → (ε→n₁ : (ℚᵘ → ℕ )) → (∀(ε₁ : ℚᵘ) → ∀(a₁ b₁ : ℕ) → ε₁ >ℚᵘ 0ℚᵘ → a₁ >ᴺ (ε→n₁ ε₁) → b₁ >ᴺ (ε→n₁ ε₁) → abs (f₁ a₁ -ℚᵘ f₁ b₁) ≤ℚᵘ ε₁) →
+             (f₂ : ( ℕ → ℚᵘ )) → (ε→n₂ : (ℚᵘ → ℕ )) → (∀(ε₂ : ℚᵘ) → ∀(a₂ b₂ : ℕ) → ε₂ >ℚᵘ 0ℚᵘ → a₂ >ᴺ (ε→n₂ ε₂) → b₂ >ᴺ (ε→n₂ ε₂) → abs (f₂ a₂ -ℚᵘ f₂ b₂) ≤ℚᵘ ε₂) →
+             ∀(εₓ : ℚᵘ) → ∀(aₓ bₓ : ℕ) → εₓ >ℚᵘ 0ℚᵘ → aₓ >ᴺ ((λ ε → ε→n₁ ( ½ *ℚᵘ ε) +ᴺ ε→n₂ ( ½ *ℚᵘ ε)) εₓ) → bₓ >ᴺ ((λ ε → ε→n₁ ( ½ *ℚᵘ ε) +ᴺ ε→n₂ ( ½ *ℚᵘ ε)) εₓ) →
+             abs ((λ x → f₁ x +ℚᵘ f₂ x) aₓ -ℚᵘ (λ x → f₁ x +ℚᵘ f₂ x) bₓ) ≤ℚᵘ εₓ
+
 _×ʳ_ : ℝ → ℝ → ℝ
 ⟪ fᵃ , ε→nᵃ , prfᵃ ⟫ ×ʳ ⟪ fᵇ , ε→nᵇ , prfᵇ ⟫  with (λ x → fᵃ x *ℚᵘ fᵇ x) | (λ ε → ε→nᵃ ( ½ *ℚᵘ ε) *ᴺ ε→nᵇ ( ½ *ℚᵘ ε))
 ... | fˣ | ε→nˣ = ⟪ fˣ , ε→nˣ , (λ where ε a b ε>0 a>nˣ b>nˣ → {!   !}) ⟫
