@@ -163,7 +163,7 @@ add-helper fᵃ ε→nᵃ prfᵃ fᵇ ε→nᵇ prfᵇ εₓ aₓ bₓ εₓ>0 a
                    | commu[+] (fᵇ aₓ) (ℚmod.- fᵃ bₓ)
                    | assoc[+] (fᵃ aₓ) (fᵇ aₓ) (ℚmod.- fᵃ bₓ)
                    | distr[-] ((fᵃ aₓ) +ℚ (fᵇ aₓ)) (fᵃ bₓ) (fᵇ bₓ)
-                   = {!joined  !}
+                   = {!  !}
 
 --prfᵃ (½ *ℚ εₓ) aₓ bₓ () (linear[<ᴺ/+] (ε→nᵃ ( ½ *ℚ εₓ)) (ε→nᵇ ( ½ *ℚ εₓ)) aₓ>ε) (linear[<ᴺ/+] (ε→nᵃ ( ½ *ℚ εₓ)) (ε→nᵇ ( ½ *ℚ εₓ)) bₓ>ε)
 
@@ -227,8 +227,8 @@ _+ʳ_ : ℝ → ℝ → ℝ
             (∀(ε : ℚ) → ∀(a b : ℕ) → ε >ℚ 0ℚ → a >ᴺ (ε→n₁ ε) → b >ᴺ (ε→n₁ ε) → abs ((λ x → ℚmod.- f₁ x) a -ℚ (λ x → ℚmod.- f₁ x) b) ≤ℚ ε )
 
 -ᵣ-helper f ε→n prf ε a b ε>0 a>ε b>ε with ℚmod.- f a -ℚ ℚmod.- f b |  prf ε a b ε>0 a>ε b>ε
--ᵣ-helper f ε→n prf ε a b ε>0 a>ε b>ε | mkℚ (+_ n) denominator-1 cop | *≤* x = *≤* {! ↯  !}
--ᵣ-helper f ε→n prf ε a b ε>0 a>ε b>ε | mkℚ (-[1+_] n) denominator-1 cop | prf′ = {! prf′ !}
+-ᵣ-helper f ε→n prf ε a b ε>0 a>ε b>ε | mkℚ (+_ n) denominator-1 cop | *≤* x = {!   !}
+-ᵣ-helper f ε→n prf ε a b ε>0 a>ε b>ε | mkℚ (-[1+_] n) denominator-1 cop | prf′ = {!  !}
 
 -ᵣ_ : ℝ → ℝ
 -ᵣ ⟪ f , ε→n , prf ⟫ = ⟪ (λ x → ℚmod.- f x) , ε→n , -ᵣ-helper f ε→n prf ⟫
